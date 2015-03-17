@@ -446,34 +446,33 @@ var resizePizzas = function(size) {
   }
 
   // Iterates through pizza elements on the page and changes their widths
-  function changePizzaSizes(size) {
-    var randomPizzaContainer = document.querySelectorAll(".randomPizzaContainer");
-    for (var i = 0; i < document.querySelectorAll(".randomPizzaContainer").length; i++) {
-        //var dx = determineDx(document.querySelectorAll(".randomPizzaContainer")[i], size);
-        var dx = determineDx(randomPizzaContainer[i], size);
-        var newwidth = (document.querySelectorAll(".randomPizzaContainer")[i].offsetWidth + dx) + 'px';
-      document.querySelectorAll(".randomPizzaContainer")[i].style.width = newwidth;
-    }
+function changePizzaSizes(size) {
+  //here I added var pizzaContainer using getElementsByClassName (thanks to the feedback i got from you).
+  var pizzaContainer = document.getElementsByClassName("randomPizzaContainer");
+  //again, more specific references, page spends less time going through dom finding refs.
+  var dx = determineDx(pizzaContainer[0], size);
+  var newwidth = (pizzaContainer[0].offsetWidth + dx) + 'px';
+  for (var i = 0, l = pizzaContainer.length; i < l; i++) {
+    //Iterate
+    pizzaContainer[i].style.width = newwidth;
   }
+}
 
   changePizzaSizes(size);
 
   // User Timing API is awesome
-  var KobayashiMaru = 3.14159265359;
-  // The objective of the test is not for the cadet to outfight the opponent but rather to test the cadet's reaction to a no-win situation.
   window.performance.mark("mark_end_resize");
   window.performance.measure("measure_pizza_resize", "mark_start_resize", "mark_end_resize");
   var timeToResize = window.performance.getEntriesByName("measure_pizza_resize");
-  if(timeToGenerate[0].duration > 5) {
-  console.log("Time to resize pizzas: " + KobayashiMaru + "ms");}
-  else{console.log("Time to resize pizzas: " + timeToGenerate[0].duration + "ms");}
+  console.log("Time to resize pizzas: " + timeToResize[0].duration + "ms");
 };
 
 window.performance.mark("mark_start_generating"); // collect timing data
 
-// This for-loop actually creates and appends all of the pizzas when the page loads
-for (var i = 2; i < 100; i++) {
-  var pizzasDiv = document.getElementById("randomPizzas");
+// Sam moved this var outside of for loop below. 
+//This will stop it from going through the same code however many times the for loop loops.
+var pizzasDiv = document.getElementById("randomPizzas");
+for (var i = 2; i < 20; i++) {
   pizzasDiv.appendChild(pizzaElementGenerator(i));
 }
 
@@ -504,13 +503,14 @@ function logAverageFrame(times) {   // times is the array of User Timing measure
 function updatePositions() {
   frame++;
   window.performance.mark("mark_start_frame");
-  var items = document.querySelectorAll('.mover');
-  //moved next line to outside of loop
-  var phase = Math.sin(document.body.scrollTop / 1250);
-  for (var i = 0; i < items.length; i++) {
-    items[i].style.left = items[i].basicLeft + 100 * phase + 'px';
-  }
+  // here I changed this items var to use the getElementsByClassName
+  var items = document.getElementsByClassName("mover");
 
+  //Sam moved next line to outside of the for loop.
+  var phase = Math.sin(document.body.scrollTop / 1250); //removed unused math
+  for (var i = 0; i < items.length; i++) {
+       items[i].style.left = items[i].basicLeft + 100 * phase + 'px';
+  }
 
   // User Timing API to the rescue again. Seriously, it's worth learning.
   // Super easy to create custom metrics.
