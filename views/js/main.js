@@ -472,7 +472,7 @@ window.performance.mark("mark_start_generating"); // collect timing data
 // Sam moved this var outside of for loop below. 
 //This will stop it from going through the same code however many times the for loop loops.
 var pizzasDiv = document.getElementById("randomPizzas");
-for (var i = 2; i < 20; i++) {
+for (var i = 2; i < 100; i++) {
   pizzasDiv.appendChild(pizzaElementGenerator(i));
 }
 
@@ -503,15 +503,6 @@ function logAverageFrame(times) {   // times is the array of User Timing measure
 function updatePositions() {
   frame++;
   window.performance.mark("mark_start_frame");
-  // here I changed this items var to use the getElementsByClassName
-  var items = document.getElementsByClassName("mover");
-
-  //Sam moved next line to outside of the for loop.
-  var phase = Math.sin(document.body.scrollTop / 1250); //removed unused math
-  for (var i = 0; i < items.length; i++) {
-       items[i].style.left = items[i].basicLeft + 100 * phase + 'px';
-  }
-
   // User Timing API to the rescue again. Seriously, it's worth learning.
   // Super easy to create custom metrics.
   window.performance.mark("mark_end_frame");
@@ -519,6 +510,17 @@ function updatePositions() {
   if (frame % 10 === 0) {
     var timesToUpdatePosition = window.performance.getEntriesByName("measure_frame_duration");
     logAverageFrame(timesToUpdatePosition);
+  }
+
+  // here I changed this items var to use the getElementsByClassName
+  var items = document.getElementsByClassName("mover");
+  //I learned that there are multiple ways of arranging your code to make it work for you.
+  //I got it scrolling at 0.02ms 
+  //Thanks for the Feedback!
+  for (var i = 0; i < items.length; i++) {
+  //moved next line back into the for loop, generating pizza phase
+  var phase = Math.sin((document.body.scrollTop / 1250) + (i % 5));
+  items[i].style.left = items[i].basicLeft + 100 * phase + 'px';
   }
 }
 
