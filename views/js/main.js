@@ -503,6 +503,16 @@ function logAverageFrame(times) {   // times is the array of User Timing measure
 function updatePositions() {
   frame++;
   window.performance.mark("mark_start_frame");
+
+  // here I changed this items var to use the getElementsByClassName
+  var items = document.getElementsByClassName("mover");
+  //moved document.body.scrollTop/1250 outside loop, reduce cost of recalculating
+  var phase  = document.body.scrollTop/1250;
+  for (var i = 0; i < items.length; i++) {
+    items[i].style.left = items[i].basicLeft + 100 * Math.sin(phase + (i % 5)) + 'px';
+ 
+  }
+
   // User Timing API to the rescue again. Seriously, it's worth learning.
   // Super easy to create custom metrics.
   window.performance.mark("mark_end_frame");
@@ -510,17 +520,6 @@ function updatePositions() {
   if (frame % 10 === 0) {
     var timesToUpdatePosition = window.performance.getEntriesByName("measure_frame_duration");
     logAverageFrame(timesToUpdatePosition);
-  }
-
-  // here I changed this items var to use the getElementsByClassName
-  var items = document.getElementsByClassName("mover");
-  //I learned that there are multiple ways of arranging your code to make it work for you.
-  //I got it scrolling at 0.02ms 
-  //Thanks for the Feedback!
-  for (var i = 0; i < items.length; i++) {
-  //moved next line back into the for loop, generating pizza phase
-  var phase = Math.sin((document.body.scrollTop / 1250) + (i % 5));
-  items[i].style.left = items[i].basicLeft + 100 * phase + 'px';
   }
 }
 
@@ -531,12 +530,14 @@ window.addEventListener('scroll', updatePositions);
 document.addEventListener('DOMContentLoaded', function() {
   var cols = 8;
   var s = 256;
-  for (var i = 0; i < 256; i++) {
+  //reduced number of pizzas needed to be used on the screen
+  for (var i = 0; i < 35; i++) {
     var elem = document.createElement('img');
     elem.className = 'mover';
-    elem.src = "images/pizza.png";
+    //saved smaller version of pizza
+    elem.src = "images/pizza_smaller.png";
     elem.style.height = "100px";
-    elem.style.width = "73.333px";
+    elem.style.width = "73px";
     elem.basicLeft = (i % cols) * s;
     elem.style.top = (Math.floor(i / cols) * s) + 'px';
     document.querySelector("#movingPizzas1").appendChild(elem);
